@@ -7,8 +7,6 @@ public class ClientFrontendController {
 
 	@RequestMapping("/")
 	public String open(Model model) {
-		String str = "Hello World";
-		model.addAttribute("value", str);
 		return "index";
 	}
 }
