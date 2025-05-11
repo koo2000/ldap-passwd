@@ -18,6 +18,9 @@ public class LdapService {
     @Autowired
     private LdapClient ldapClient;
 
+    // @Autowired
+    // private LdapUserDetailsManager ldapUserDetailsManager;
+
     public boolean checkAuth(String user, String password) {
         try {
             ldapClient.authenticate().query(query().base("ou=people")
@@ -40,4 +43,11 @@ public class LdapService {
         Attribute attr = attrs.get("uid");
         return attr == null ? "" :  attr.toString();
     }
+
+    // public boolean updatePassword(String oldPassword, String newPassword) {
+        
+    //     ldapUserDetailsManager.changePassword(oldPassword, newPassword);
+    //     return false;
+    // }
+
 }

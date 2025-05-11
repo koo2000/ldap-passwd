@@ -1,0 +1,16 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+  <head>
+    <meta charset="utf-8">
+    <title>Top</title>
+  </head>
+  <body>
+    <ul>
+      <li><a href="./admin/admin.html">Admin</a></li>
+      <li><a href="./user/user.html">User</a></li>
+      <li><a href="./logout">Logout</a></li>
+    </ul>
+
+    role:<span th:text="${role}"></span>
+  </body>
+</html>
