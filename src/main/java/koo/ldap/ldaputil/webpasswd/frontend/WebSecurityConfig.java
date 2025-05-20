@@ -11,6 +11,9 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.ldap.DefaultLdapUsernameToDnMapper;
+import org.springframework.security.ldap.LdapUsernameToDnMapper;
+import org.springframework.security.ldap.userdetails.LdapUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
@@ -22,11 +25,20 @@ public class WebSecurityConfig {
     @Value("${spring.websecurity.debug:false}")
     boolean webSecurityDebug;
 
-    @Value("${userSearchBase:dc=example,dc=com}")
+    @Value("dc=example,dc=com")
     private String userSearchBase;
 
     @Value("${app.userDnPatterns:uid={0},ou=people,dc=example,dc=com}")
     private String userDnPatterns;
+
+    @Value("${app.userDnBase:ou=people}")
+    private String userDnBase;
+
+    @Value("${app.usernameAttribute:uid}")
+    private String usernameAttribute;
+
+    @Value("${app.userRoleAttribute:cn}")
+    private String userRoleAttribute;
 
     @Value("${app.groupSearchBase:ou=groups,dc=example,dc=com}")
     private String groupSearchBase;
@@ -48,8 +60,10 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(authz -> authz
-                .requestMatchers(new AntPathRequestMatcher("/index.html")).authenticated()
-                .anyRequest().authenticated())
+                .requestMatchers(new AntPathRequestMatcher("/")).authenticated()
+                .requestMatchers(new AntPathRequestMatcher("/changePassword")).authenticated()
+                .requestMatchers(new AntPathRequestMatcher("/error")).authenticated()
+                .anyRequest().permitAll())
                 .formLogin(Customizer.withDefaults());
 
 
@@ -62,7 +76,7 @@ public class WebSecurityConfig {
                 .userSearchBase(userSearchBase)
                 .userDnPatterns(userDnPatterns)
                 .groupSearchBase(groupSearchBase)
-                .groupRoleAttribute("cn")
+                .groupRoleAttribute(userRoleAttribute)
                 .contextSource()
                     .url(ldapUrl)
                     .managerDn(ldapManagerDn)
@@ -72,6 +86,18 @@ public class WebSecurityConfig {
     @Bean
     public LdapClient createLdapClient(ContextSource cs) {
         return LdapClient.create(cs);
+    }
+
+    @Bean
+    public LdapUserDetailsManager ldapUserDetailsManager(ContextSource cs) {
+        LdapUserDetailsManager ldapUserDetailsManager = new LdapUserDetailsManager(cs);
+
+        
+        LdapUsernameToDnMapper uMpper = new DefaultLdapUsernameToDnMapper(userDnBase, usernameAttribute);
+        ldapUserDetailsManager.setUsernameMapper(uMpper);
+
+        return ldapUserDetailsManager;
+
     }
 
 }

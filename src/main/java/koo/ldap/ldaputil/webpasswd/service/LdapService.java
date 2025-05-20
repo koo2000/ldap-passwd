@@ -8,6 +8,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ldap.core.LdapClient;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.ldap.userdetails.LdapUserDetailsManager;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -17,6 +21,11 @@ public class LdapService {
 
     @Autowired
     private LdapClient ldapClient;
+
+    @Autowired
+    private LdapUserDetailsManager ldapUserDetailsManager;
+
+    
 
     // @Autowired
     // private LdapUserDetailsManager ldapUserDetailsManager;
@@ -44,10 +53,13 @@ public class LdapService {
         return attr == null ? "" :  attr.toString();
     }
 
-    // public boolean updatePassword(String oldPassword, String newPassword) {
+    public boolean updatePassword(String oldPassword, String newPassword) {
         
-    //     ldapUserDetailsManager.changePassword(oldPassword, newPassword);
-    //     return false;
-    // }
+            String username = SecurityContextHolder.getContext().getAuthentication().getName();
+            UserDetails userDetails = User.withUsername(username).password(newPassword).build();
+            
+            ldapUserDetailsManager.changePassword(oldPassword, newPassword);
+        return false;
+    }
 
 }
