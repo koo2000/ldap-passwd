@@ -6,26 +6,31 @@ logging.level.org.springframework.security=debug
 spring.websecurity.debug=true
 
 
-spring.ldap.urls=ldap://localhost:20389
-spring.ldap.base=dc=example,dc=com
-# spring.ldap.base=dc=example,dc=org
-spring.ldap.username=uid=admin,ou=system
-spring.ldap.password=secret
+# application setting
+app.userDnPatterns=cn={0},ou=people,dc=example,dc=com
+app.groupSearchBase=ou=groups,dc=example,dc=com
+app.ldapUrl=ldap://localhost:389
+app.groupRoleAttribute=cn
+app.ldapManagerDn=cn=admin,dc=example,dc=com
+app.ldapManagerPassword=admin_password
 
-# test configuration
-spring.ldap.embedded.port=20389
-spring.ldap.embedded.credential.username=uid=admin,ou=system
-spring.ldap.embedded.credential.password=secret
+
+app.userDnBase=ou=people,dc=example,dc=com
+app.usernameAttribute=cn
+
+# for Spring ldap context setting
+spring.ldap.urls=ldap://localhost:389
+spring.ldap.username=cn=admin,dc=example,dc=com
+spring.ldap.password=admin_password
+
+# embeded test configuration
+# spring.ldap.embedded.port=20389
+# spring.ldap.embedded.credential.username=uid=admin,ou=system
+# spring.ldap.embedded.credential.password=secret
 # spring.ldap.embedded.base-dn=dc=example,dc=org
 # spring.ldap.embedded.ldif=classpath:/testuser2.ldif
 
-spring.ldap.embedded.base-dn=dc=example,dc=com
-spring.ldap.embedded.ldif=classpath:/testuser.ldif
+# spring.ldap.embedded.base-dn=dc=example,dc=com
+# spring.ldap.embedded.ldif=classpath:/testuser.ldif
 
 
-
-app.userDnPatterns:uid={0},ou=people,dc=example,dc=com
-app.groupSearchBase:ou=groups,dc=example,dc=com
-app.ldapUrl:ldap://localhost:20389
-app.ldapManagerDn:uid=admin,ou=system
-app.ldapManagerPassword:secret
