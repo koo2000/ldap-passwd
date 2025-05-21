@@ -40,9 +40,11 @@ public class ClientFrontendController {
 		model.addAttribute("passwordChangeForm", new PasswordChangeForm());
 		try {
 			ldapService.updatePassword(passwordChangeForm.getOldPassword(), passwordChangeForm.getNewPassword());
+			model.addAttribute("messageIsError", false);
 			model.addAttribute("message", "パスワード変更が成功しました。");
 		} catch (BadCredentialsException ex) {
-			model.addAttribute("message", "現在のパスワードが違います。");
+			model.addAttribute("messageIsError", true);
+			model.addAttribute("message", "パスワード変更に失敗しました。(現在のパスワードが違います。)");
 		}
 
 		return "index";
