@@ -10,7 +10,7 @@
 		<!-- lookup parent from repository -->
 	</parent>
 	<groupId>koo.ldap.ldaputil</groupId>
-	<artifactId>webpasswd</artifactId>
+	<artifactId>ldappasswd</artifactId>
 	<version>0.0.1</version>
 	<name>webpasswd</name>
 	<description>Demo project for Spring Boot</description>
