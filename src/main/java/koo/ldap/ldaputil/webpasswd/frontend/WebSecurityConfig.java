@@ -1,5 +1,7 @@
 package koo.ldap.ldaputil.webpasswd.frontend;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -11,6 +13,11 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
+import org.springframework.security.crypto.password.LdapShaPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.ldap.DefaultLdapUsernameToDnMapper;
 import org.springframework.security.ldap.LdapUsernameToDnMapper;
 import org.springframework.security.ldap.userdetails.LdapUserDetailsManager;
@@ -77,10 +84,21 @@ public class WebSecurityConfig {
                 .userDnPatterns(userDnPatterns)
                 .groupSearchBase(groupSearchBase)
                 .groupRoleAttribute(userRoleAttribute)
+                .passwordEncoder(creatEncoder())
                 .contextSource()
                     .url(ldapUrl)
                     .managerDn(ldapManagerDn)
                     .managerPassword(ldapManagerPassword);
+    }
+
+    private PasswordEncoder creatEncoder() {
+        PasswordEncoderFactories.createDelegatingPasswordEncoder();
+        String migrated = "BCRYPT";
+        Map<String, PasswordEncoder> encoderMap = Map.of(
+            "SSHA", new LdapShaPasswordEncoderWrappper(new LdapShaPasswordEncoder()),
+            "BCRYPT", new BCryptPasswordEncoder());
+        
+        return new DelegatingPasswordEncoder(migrated, encoderMap);
     }
 
     @Bean
@@ -100,4 +118,20 @@ public class WebSecurityConfig {
 
     }
 
+    private class LdapShaPasswordEncoderWrappper implements PasswordEncoder {
+        private PasswordEncoder delegate;
+        public LdapShaPasswordEncoderWrappper(LdapShaPasswordEncoder encoder) {
+            this.delegate = encoder;
+        }
+
+        @Override
+        public String encode(CharSequence rawPassword) {
+            return delegate.encode(rawPassword);
+        }
+
+        @Override
+        public boolean matches(CharSequence rawPassword, String encodedPassword) {
+            return delegate.matches(rawPassword, "{SSHA}" + encodedPassword);
+        }
+    }
 }

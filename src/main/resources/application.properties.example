@@ -7,16 +7,16 @@ spring.websecurity.debug=true
 
 
 # application setting
-app.userDnPatterns=cn={0},ou=people,dc=example,dc=com
+app.userDnPatterns=uid={0},ou=people,dc=example,dc=com
 app.groupSearchBase=ou=groups,dc=example,dc=com
 app.ldapUrl=ldap://localhost:389
-app.groupRoleAttribute=cn
+app.groupRoleAttribute=uid
 app.ldapManagerDn=cn=admin,dc=example,dc=com
 app.ldapManagerPassword=admin_password
 
 
 app.userDnBase=ou=people,dc=example,dc=com
-app.usernameAttribute=cn
+app.usernameAttribute=uid
 
 # for Spring ldap context setting
 spring.ldap.urls=ldap://localhost:389
